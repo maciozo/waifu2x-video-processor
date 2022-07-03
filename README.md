@@ -6,6 +6,8 @@ This can save hundreds of GB for long videos.
 
 ## Installation
 
+Make sure you have [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp) installed, or another one with the same CLI.
+
 Clone this repository, then run `pip install ./waifu2x-video-processor`.
 
 
