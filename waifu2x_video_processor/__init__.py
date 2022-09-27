@@ -177,6 +177,7 @@ def benchmark_processor(
         w2x_runner(waifu2x_path, Waifu2xJob(td / "orig1.webp", td / "out1.png"), processor, scale_ratio, noise_level)
         elapsed = time.perf_counter() - start
 
+    print(elapsed)
     return elapsed
 
 
@@ -189,7 +190,7 @@ def calculate_processor_scores(processor_times: List[MovingAverage]) -> List[flo
         times.append(t.mean)
     total_time = sum(times)
     for i in range(len(times)):
-        _state.processor_scores[i] = (total_time - times[i]) / total_time
+        _state.processor_scores[i] = total_time / times[i]
     return _state.processor_scores
 
 
@@ -205,6 +206,7 @@ def main(
 ) -> int:
     _state.frame_count = get_frame_count(video_in_path, mediainfo_path)
     _state.processors = tuple(processors)
+    # _state.processors = tuple([p for sublist in zip(processors, processors) for p in sublist])
     _state.processor_scores = [1.0 / len(processors)] * len(processors)
     _state.frame_output_index = 0
     _state.frame_extraction_index = 0
@@ -219,6 +221,10 @@ def main(
             benchmark_processor(ffmpeg_path, waifu2x_path, video_in_path, video_stream, processor, scale_ratio,
                                 noise_level)
         )
+
+    calculate_processor_scores(processor_times)
+    _state.print_state()
+    print("Send SIGUSR1 to get an update on this information.", file=sys.stderr)
 
     w2x_threads = []
     w2x_queues = []
